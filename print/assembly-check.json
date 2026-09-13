@@ -1,0 +1,7 @@
+{
+  "candidate_pairs_tested": 18,
+  "collision_tolerance_mm3": 0.01,
+  "collisions": [],
+  "passed": true,
+  "method": "Exact boolean intersections of assembled parts, including alignment dowels and stand"
+}

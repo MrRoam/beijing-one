@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#eeece6">
+  <title>北京一号 · 航空记忆</title>
+  <meta name="description" content="北航北京一号轻型旅客机的非官方数字外观复原。探索三维模型，下载网站展示与1:72打印文件。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23ad342b'/%3E%3Cpath d='M8 34L28 29L30 9H34L36 29L56 34V39L36 35L35 49L43 53V56L32 53L21 56V53L29 49L28 35L8 39Z' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">{"imports":{"three":"./vendor/build/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+</head>
+<body>
+  <a class="skip-link" href="#controls">跳转到模型控制</a>
+  <header class="header">
+    <a class="brand" href="#exhibit" aria-label="航空记忆 首页"><span class="brand-mark" aria-hidden="true">✦</span> 航空记忆 <span class="brand-en">AIRCRAFT STUDIES</span></a>
+    <nav aria-label="主要导航"><a href="#story">飞机的故事</a><a href="#downloads">下载模型 <span aria-hidden="true">↗</span></a></nav>
+  </header>
+  <main>
+    <section class="exhibit" id="exhibit" aria-labelledby="title">
+      <div class="intro">
+        <p class="eyebrow"><span class="edition">001</span> 北京航空学院 · 1958</p>
+        <h1 id="title">北京<br>一号<span class="red-dot">。</span></h1>
+        <p class="latin">BEIJING NO.1</p>
+        <p class="intro-copy">从校园走向蓝天。<br>一架由师生自主设计制造的<br>轻型旅客机。</p>
+        <a class="text-link" href="#story">认识这架飞机 <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="viewer" id="viewer" aria-label="北京一号三维展示区域">
+        <img class="fallback" id="fallback" src="../previews/hero.png" alt="北京一号数字复原模型，银色机身、红色腰线、双螺旋桨" fetchpriority="high">
+        <div id="canvas-host"></div>
+        <p class="loading" id="loading" role="status">正在载入三维模型…</p>
+        <button id="retry" class="retry" hidden>重新载入</button>
+      </div>
+      <div class="spec-note"><span>外观复原</span><strong>1 : 72</strong><span>打印套件比例</span></div>
+      <div class="controls" id="controls" aria-label="三维模型控制">
+        <div class="view-buttons" role="group" aria-label="观察视角">
+          <button data-view="perspective" aria-pressed="true" disabled>总览</button>
+          <button data-view="side" aria-pressed="false" disabled>侧视</button>
+          <button data-view="top" aria-pressed="false" disabled>俯视</button>
+          <button data-view="front" aria-pressed="false" disabled>正视</button>
+        </div>
+        <span class="control-divider" aria-hidden="true"></span>
+        <button id="spin" aria-pressed="false" disabled><span class="play-icon" aria-hidden="true">▷</span><span id="spin-label">播放螺旋桨</span></button>
+        <button id="gear" aria-pressed="true" disabled>起落架</button>
+        <div class="zoom-buttons" role="group" aria-label="缩放与复位">
+          <button id="zoom-out" aria-label="缩小模型" disabled>−</button>
+          <button id="zoom-in" aria-label="放大模型" disabled>＋</button>
+          <button id="reset" aria-label="复位模型" disabled>↺</button>
+        </div>
+      </div>
+      <div class="exhibit-foot"><span>非官方数字复原 · V1.0</span><span id="interaction-hint">拖动旋转 · 滚轮缩放</span><a href="#story" aria-label="向下阅读飞机故事">向下探索 ↓</a></div>
+    </section>
+
+    <section class="story section" id="story" aria-labelledby="story-title">
+      <div class="section-label"><span>01 / 飞机的故事</span><span>FIRST FLIGHT · 24 SEP 1958</span></div>
+      <div class="story-layout">
+        <div><h2 id="story-title">一次毕业设计，<br>飞上了蓝天。</h2><p>1958 年 9 月 24 日，北京一号首飞成功。北京航空学院的师生在校园里完成了这架双发轻型旅客机的设计与制造，让图纸变成了真正的飞机。</p><p>这份数字复原以馆藏实机照片为主要外观参考，保留尖长机头、双叶螺旋桨和红色折线腰线。</p><a class="text-link" href="https://news.buaa.edu.cn/info/1002/57386.htm" target="_blank" rel="noopener">阅读北航的历史记录 ↗</a></div>
+        <figure class="profile"><img src="../previews/side.png" alt="北京一号模型左侧视图，展示机身比例、驾驶舱、客舱窗和垂尾" loading="lazy"><figcaption><span>左侧视图 / 数字复原</span><span>12.4 m 机长基准</span></figcaption></figure>
+      </div>
+      <dl class="specifications"><div><dt>机长基准</dt><dd>12.4 <small>m</small></dd></div><div><dt>翼展基准</dt><dd>16.3 <small>m</small></dd></div><div><dt>动力布局</dt><dd>双发 <small>活塞式</small></dd></div><div><dt>乘员配置</dt><dd>2 + 8 <small>人</small></dd></div></dl>
+      <details class="source-note"><summary>关于复原精度与资料来源</summary><div><p>本模型是依据照片和公开尺寸制作的外观复原，不是原始工程模型。机长 12.4 米、翼展 16.3 米采用北航刊物数据；另有报道记载翼展 16.4 米。局部剖面、翼型、舱门位置、桨叶形状及字体为近似表达。</p><ul><li><a href="https://xyh.buaa.edu.cn/__local/B/DB/AA/E2848174520624EC4468B4E50EF_7E27D218_22F0B93.pdf#page=31" target="_blank" rel="noopener">北航刊物 · PDF 第 31 页，印刷页 29</a></li><li><a href="https://news.buaa.edu.cn/info/1006/44055.htm" target="_blank" rel="noopener">馆藏实机与历史照片 · 北航新闻网</a></li><li><a href="https://paper.people.com.cn/rmrb/images/2023-02/02/04/rmrb2023020204.pdf" target="_blank" rel="noopener">翼展差异记录 · 人民日报 2023 年 2 月 2 日第 4 版</a></li></ul><p>网页图片均为本项目模型的渲染图，未转载摄影作品。</p></div></details>
+    </section>
+
+    <section class="downloads section" id="downloads" aria-labelledby="download-title">
+      <div class="section-label"><span>02 / 把它带走</span><span>DISPLAY & MAKE</span></div>
+      <div class="download-heading"><h2 id="download-title">屏幕里探索，<br>桌面上相见。</h2><p>展示模型与打印套件各自适配，<br>共用同一份外形基础。</p></div>
+      <div class="download-list">
+        <a href="../models/beijing-one.glb" download><span class="file-type">GLB</span><span class="file-label">网页展示模型<small>含材质、独立螺旋桨节点</small></span><span class="file-action">下载 ↗</span></a>
+        <a href="../models/beijing-one.blend" download><span class="file-type">BLEND</span><span class="file-label">可编辑源模型<small>Blender 5.0 · 含灯光与相机</small></span><span class="file-action">下载 ↗</span></a>
+        <a href="../beijing-one-print-kit.zip" download><span class="file-type">1:72</span><span class="file-label">分件打印套件<small>STL、通用 3MF、底座与配合试片</small></span><span class="file-action">下载 ↗</span></a>
+        <a href="../docs/打印与装配说明.md" download><span class="file-type">GUIDE</span><span class="file-label">打印与装配说明<small>零件编号、装配顺序与试打建议</small></span><span class="file-action">下载 ↗</span></a>
+      </div>
+      <p class="print-note">打印成品机长约 172 mm、翼展约 226 mm。套件采用收起起落架的展示姿态，薄边和桨叶已加厚。打印机尚未确定，文件不含机型专用参数；实际配合仍需试片验证。</p>
+    </section>
+  </main>
+  <footer><span>北京一号 · 航空记忆</span><span>非官方外观复原 / 2026</span><a href="#exhibit">回到模型 ↑</a></footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

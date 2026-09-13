@@ -1,0 +1,20 @@
+{
+  "subject": "北航北京一号轻型旅客机 / Beijing No.1 (1958)",
+  "revision": "1.0",
+  "units": "metres",
+  "length": 12.4,
+  "wingspan": 16.3,
+  "height_on_gear": 4.6,
+  "print_scale": 72,
+  "basis": "北航校友会刊物 PDF 第31页（印刷页29）",
+  "source": "https://xyh.buaa.edu.cn/__local/B/DB/AA/E2848174520624EC4468B4E50EF_7E27D218_22F0B93.pdf#page=31",
+  "discrepancy": "人民日报2023-02-02第4版报道翼展16.4m；本版采用北航刊物16.3m。",
+  "estimated": {
+    "fuselage_max_width": 1.82,
+    "engine_lateral_offset": 2.8,
+    "propeller_diameter": 2.36,
+    "wing_root_chord": 3.75,
+    "tailplane_span": 5.4,
+    "note": "局部尺寸、翼型、剖面和涂装边界根据参考照片近似，非原始工程图。"
+  }
+}

@@ -1,0 +1,368 @@
+{
+  "scale": "1:72",
+  "units": "millimetres",
+  "printer": "not selected",
+  "material": "not selected",
+  "layout_reference_bed_mm": [
+    210,
+    210
+  ],
+  "layout_is_printer_profile": false,
+  "body_length_mm": 172.222,
+  "wingspan_mm": 226.389,
+  "wing_tail_min_edge_mm": 1.1,
+  "propeller_thickness_mm": 1.2,
+  "wing_joint_pin_diameter_mm": 3.0,
+  "wing_joint_hole_diameter_mm": 3.3,
+  "parts": [
+    {
+      "id": "01_fuselage_front",
+      "description": "前机身；分割平面朝平台；两孔为 3.3 mm",
+      "quantity": 1,
+      "dimensions_mm": [
+        28.75,
+        25.28,
+        94.44
+      ],
+      "non_manifold_edges": 0,
+      "connected_components": 1,
+      "volume_mm3": 40580.193,
+      "triangles": 5850,
+      "possible_self_intersections": 0,
+      "passed": true
+    },
+    {
+      "id": "02_fuselage_rear",
+      "description": "后机身与垂尾；分割平面朝平台；机翼和平尾插槽已经预留",
+      "quantity": 1,
+      "dimensions_mm": [
+        46.82,
+        23.4,
+        77.78
+      ],
+      "non_manifold_edges": 0,
+      "connected_components": 1,
+      "volume_mm3": 16905.319,
+      "triangles": 5378,
+      "possible_self_intersections": 0,
+      "passed": true
+    },
+    {
+      "id": "03_wing_left",
+      "description": "机翼与短舱；翼根双定位销；平放，短舱及销下方需要支撑",
+      "quantity": 1,
+      "dimensions_mm": [
+        65.99,
+        109.58,
+        16.11
+      ],
+      "non_manifold_edges": 0,
+      "connected_components": 1,
+      "volume_mm3": 17730.938,
+      "triangles": 5074,
+      "possible_self_intersections": 0,
+      "passed": true
+    },
+    {
+      "id": "04_wing_right",
+      "description": "机翼与短舱；翼根双定位销；平放，短舱及销下方需要支撑",
+      "quantity": 1,
+      "dimensions_mm": [
+        65.99,
+        109.58,
+        16.11
+      ],
+      "non_manifold_edges": 0,
+      "connected_components": 1,
+      "volume_mm3": 17730.952,
+      "triangles": 5078,
+      "possible_self_intersections": 0,
+      "passed": true
+    },
+    {
+      "id": "05_tail_left",
+      "description": "平尾；一体定位销；平放并按需支撑",
+      "quantity": 1,
+      "dimensions_mm": [
+        35.19,
+        35.63,
+        4.4
+      ],
+      "non_manifold_edges": 0,
+      "connected_components": 1,
+      "volume_mm3": 2152.605,
+      "triangles": 1284,
+      "possible_self_intersections": 0,
+      "passed": true
+    },
+    {
+      "id": "06_tail_right",
+      "description": "平尾；一体定位销；平放并按需支撑",
+      "quantity": 1,
+      "dimensions_mm": [
+        35.19,
+        35.63,
+        4.4
+      ],
+      "non_manifold_edges": 0,
+      "connected_components": 1,
+      "volume_mm3": 2152.605,
+      "triangles": 1286,
+      "possible_self_intersections": 0,
+      "passed": true
+    },
+    {
+      "id": "07_propeller_left",
+      "description": "加厚双叶桨；中心孔 2.2 mm；平面朝平台",
+      "quantity": 1,
+      "dimensions_mm": [
+        31.74,
+        9.48,
+        2.0
+      ],
+      "non_manifold_edges": 0,
+      "connected_components": 1,
+      "volume_mm3": 130.262,
+      "triangles": 368,
+      "possible_self_intersections": 0,
+      "passed": true
+    },
+    {
+      "id": "08_propeller_right",
+      "description": "加厚双叶桨；中心孔 2.2 mm；平面朝平台",
+      "quantity": 1,
+      "dimensions_mm": [
+        31.74,
+        9.48,
+        2.0
+      ],
+      "non_manifold_edges": 0,
+      "connected_components": 1,
+      "volume_mm3": 130.262,
+      "triangles": 368,
+      "possible_self_intersections": 0,
+      "passed": true
+    },
+    {
+      "id": "09_join_pin",
+      "description": "直径 3 mm、长度 9 mm；打印两根；先用配合试片确认",
+      "quantity": 2,
+      "dimensions_mm": [
+        3.0,
+        3.0,
+        9.0
+      ],
+      "non_manifold_edges": 0,
+      "connected_components": 1,
+      "volume_mm3": 63.209,
+      "triangles": 124,
+      "possible_self_intersections": 0,
+      "passed": true
+    },
+    {
+      "id": "10_display_stand",
+      "description": "70 × 45 mm 底座；整体竖直打印；顶部定位销 4 mm",
+      "quantity": 1,
+      "dimensions_mm": [
+        70.0,
+        45.0,
+        40.1
+      ],
+      "non_manifold_edges": 0,
+      "connected_components": 1,
+      "volume_mm3": 11919.7,
+      "triangles": 498,
+      "possible_self_intersections": 0,
+      "passed": true
+    },
+    {
+      "id": "11_fit_coupon",
+      "description": "从缺口端起孔径 3.10 / 3.20 / 3.30 / 3.40 mm；用 09 号销测试",
+      "quantity": 1,
+      "dimensions_mm": [
+        38.0,
+        12.0,
+        4.0
+      ],
+      "non_manifold_edges": 0,
+      "connected_components": 1,
+      "volume_mm3": 1679.477,
+      "triangles": 586,
+      "possible_self_intersections": 0,
+      "passed": true
+    }
+  ],
+  "placements": [
+    {
+      "id": "01_fuselage_front",
+      "instance": 1,
+      "plate": 1,
+      "xy": [
+        5,
+        5
+      ],
+      "dimensions_mm": [
+        28.75,
+        25.27777862548828,
+        94.44444274902344
+      ]
+    },
+    {
+      "id": "02_fuselage_rear",
+      "instance": 1,
+      "plate": 1,
+      "xy": [
+        41.75,
+        5
+      ],
+      "dimensions_mm": [
+        46.821937561035156,
+        23.398839950561523,
+        77.77777099609375
+      ]
+    },
+    {
+      "id": "03_wing_left",
+      "instance": 1,
+      "plate": 1,
+      "xy": [
+        96.57193756103516,
+        5
+      ],
+      "dimensions_mm": [
+        65.9888916015625,
+        109.58332824707031,
+        16.11111068725586
+      ]
+    },
+    {
+      "id": "04_wing_right",
+      "instance": 1,
+      "plate": 2,
+      "xy": [
+        5,
+        5
+      ],
+      "dimensions_mm": [
+        65.9888916015625,
+        109.58332824707031,
+        16.11111068725586
+      ]
+    },
+    {
+      "id": "05_tail_left",
+      "instance": 1,
+      "plate": 2,
+      "xy": [
+        78.9888916015625,
+        5
+      ],
+      "dimensions_mm": [
+        35.19033432006836,
+        35.63333511352539,
+        4.398380279541016
+      ]
+    },
+    {
+      "id": "06_tail_right",
+      "instance": 1,
+      "plate": 2,
+      "xy": [
+        122.17922592163086,
+        5
+      ],
+      "dimensions_mm": [
+        35.19033432006836,
+        35.63333511352539,
+        4.398380279541016
+      ]
+    },
+    {
+      "id": "07_propeller_left",
+      "instance": 1,
+      "plate": 2,
+      "xy": [
+        165.36956024169922,
+        5
+      ],
+      "dimensions_mm": [
+        31.7392578125,
+        9.481990814208984,
+        2.0
+      ]
+    },
+    {
+      "id": "08_propeller_right",
+      "instance": 1,
+      "plate": 2,
+      "xy": [
+        5,
+        122.58332824707031
+      ],
+      "dimensions_mm": [
+        31.7392578125,
+        9.481990814208984,
+        2.0
+      ]
+    },
+    {
+      "id": "09_join_pin",
+      "instance": 1,
+      "plate": 2,
+      "xy": [
+        44.7392578125,
+        122.58332824707031
+      ],
+      "dimensions_mm": [
+        3.0,
+        3.0,
+        9.0
+      ]
+    },
+    {
+      "id": "09_join_pin",
+      "instance": 2,
+      "plate": 2,
+      "xy": [
+        55.7392578125,
+        122.58332824707031
+      ],
+      "dimensions_mm": [
+        3.0,
+        3.0,
+        9.0
+      ]
+    },
+    {
+      "id": "10_display_stand",
+      "instance": 1,
+      "plate": 2,
+      "xy": [
+        66.7392578125,
+        122.58332824707031
+      ],
+      "dimensions_mm": [
+        70.0,
+        45.0,
+        40.099998474121094
+      ]
+    },
+    {
+      "id": "11_fit_coupon",
+      "instance": 1,
+      "plate": 2,
+      "xy": [
+        144.7392578125,
+        122.58332824707031
+      ],
+      "dimensions_mm": [
+        38.0,
+        12.0,
+        4.0
+      ]
+    }
+  ],
+  "geometry_passed": true,
+  "physical_fit_tested": false,
+  "machine_sliced": false
+}

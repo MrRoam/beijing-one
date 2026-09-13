@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.blend1
+*.blend2
+SHA256SUMS.txt
+.DS_Store
+Thumbs.db

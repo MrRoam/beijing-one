@@ -1,0 +1,47 @@
+[
+  {
+    "path": "style.css",
+    "status": 200,
+    "bytes": 9313
+  },
+  {
+    "path": "../previews/hero.png",
+    "status": 200,
+    "bytes": 1380709
+  },
+  {
+    "path": "../previews/side.png",
+    "status": 200,
+    "bytes": 1344977
+  },
+  {
+    "path": "../models/beijing-one.glb",
+    "status": 200,
+    "bytes": 1147120
+  },
+  {
+    "path": "../models/beijing-one.blend",
+    "status": 200,
+    "bytes": 474042
+  },
+  {
+    "path": "../beijing-one-print-kit.zip",
+    "status": 200,
+    "bytes": 7116159
+  },
+  {
+    "path": "../docs/打印与装配说明.md",
+    "status": 200,
+    "bytes": 5361
+  },
+  {
+    "path": "app.js",
+    "status": 200,
+    "bytes": 7253
+  },
+  {
+    "path": "../models/beijing-one.glb",
+    "status": 200,
+    "bytes": 1147120
+  }
+]

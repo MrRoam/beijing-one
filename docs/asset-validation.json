@@ -1,0 +1,346 @@
+{
+  "stl": [
+    {
+      "triangles": 5850,
+      "boundary_or_nonmanifold_edges": 0,
+      "inconsistent_winding_edges": 0,
+      "degenerate_triangles": 0,
+      "volume_mm3": 40580.19,
+      "passed": true,
+      "id": "01_fuselage_front",
+      "dimensions_match": true,
+      "bed_min_z_mm": 0.0,
+      "sections": [
+        {
+          "height_mm": 11.333,
+          "segments": 124,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 47.222,
+          "segments": 112,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 83.111,
+          "segments": 112,
+          "open_endpoints": 0
+        }
+      ]
+    },
+    {
+      "triangles": 5378,
+      "boundary_or_nonmanifold_edges": 0,
+      "inconsistent_winding_edges": 0,
+      "degenerate_triangles": 0,
+      "volume_mm3": 16905.319,
+      "passed": true,
+      "id": "02_fuselage_rear",
+      "dimensions_match": true,
+      "bed_min_z_mm": 0.0,
+      "sections": [
+        {
+          "height_mm": 9.333,
+          "segments": 112,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 38.889,
+          "segments": 116,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 68.444,
+          "segments": 156,
+          "open_endpoints": 0
+        }
+      ]
+    },
+    {
+      "triangles": 5074,
+      "boundary_or_nonmanifold_edges": 0,
+      "inconsistent_winding_edges": 0,
+      "degenerate_triangles": 0,
+      "volume_mm3": 17730.937,
+      "passed": true,
+      "id": "03_wing_left",
+      "dimensions_match": true,
+      "bed_min_z_mm": 0.0,
+      "sections": [
+        {
+          "height_mm": 1.933,
+          "segments": 97,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 8.056,
+          "segments": 290,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 14.178,
+          "segments": 84,
+          "open_endpoints": 0
+        }
+      ]
+    },
+    {
+      "triangles": 5078,
+      "boundary_or_nonmanifold_edges": 0,
+      "inconsistent_winding_edges": 0,
+      "degenerate_triangles": 0,
+      "volume_mm3": 17730.952,
+      "passed": true,
+      "id": "04_wing_right",
+      "dimensions_match": true,
+      "bed_min_z_mm": 0.0,
+      "sections": [
+        {
+          "height_mm": 1.933,
+          "segments": 99,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 8.056,
+          "segments": 289,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 14.178,
+          "segments": 83,
+          "open_endpoints": 0
+        }
+      ]
+    },
+    {
+      "triangles": 1284,
+      "boundary_or_nonmanifold_edges": 0,
+      "inconsistent_winding_edges": 0,
+      "degenerate_triangles": 0,
+      "volume_mm3": 2152.605,
+      "passed": true,
+      "id": "05_tail_left",
+      "dimensions_match": true,
+      "bed_min_z_mm": 0.0,
+      "sections": [
+        {
+          "height_mm": 0.528,
+          "segments": 66,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 2.199,
+          "segments": 144,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 3.871,
+          "segments": 151,
+          "open_endpoints": 0
+        }
+      ]
+    },
+    {
+      "triangles": 1286,
+      "boundary_or_nonmanifold_edges": 0,
+      "inconsistent_winding_edges": 0,
+      "degenerate_triangles": 0,
+      "volume_mm3": 2152.605,
+      "passed": true,
+      "id": "06_tail_right",
+      "dimensions_match": true,
+      "bed_min_z_mm": 0.0,
+      "sections": [
+        {
+          "height_mm": 0.528,
+          "segments": 65,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 2.199,
+          "segments": 145,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 3.871,
+          "segments": 153,
+          "open_endpoints": 0
+        }
+      ]
+    },
+    {
+      "triangles": 368,
+      "boundary_or_nonmanifold_edges": 0,
+      "inconsistent_winding_edges": 0,
+      "degenerate_triangles": 0,
+      "volume_mm3": 130.262,
+      "passed": true,
+      "id": "07_propeller_left",
+      "dimensions_match": true,
+      "bed_min_z_mm": 0.0,
+      "sections": [
+        {
+          "height_mm": 0.24,
+          "segments": 146,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 1.0,
+          "segments": 146,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 1.76,
+          "segments": 134,
+          "open_endpoints": 0
+        }
+      ]
+    },
+    {
+      "triangles": 368,
+      "boundary_or_nonmanifold_edges": 0,
+      "inconsistent_winding_edges": 0,
+      "degenerate_triangles": 0,
+      "volume_mm3": 130.262,
+      "passed": true,
+      "id": "08_propeller_right",
+      "dimensions_match": true,
+      "bed_min_z_mm": 0.0,
+      "sections": [
+        {
+          "height_mm": 0.24,
+          "segments": 146,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 1.0,
+          "segments": 146,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 1.76,
+          "segments": 134,
+          "open_endpoints": 0
+        }
+      ]
+    },
+    {
+      "triangles": 124,
+      "boundary_or_nonmanifold_edges": 0,
+      "inconsistent_winding_edges": 0,
+      "degenerate_triangles": 0,
+      "volume_mm3": 63.209,
+      "passed": true,
+      "id": "09_join_pin",
+      "dimensions_match": true,
+      "bed_min_z_mm": 0.0,
+      "sections": [
+        {
+          "height_mm": 1.08,
+          "segments": 64,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 4.5,
+          "segments": 64,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 7.92,
+          "segments": 64,
+          "open_endpoints": 0
+        }
+      ]
+    },
+    {
+      "triangles": 498,
+      "boundary_or_nonmanifold_edges": 0,
+      "inconsistent_winding_edges": 0,
+      "degenerate_triangles": 0,
+      "volume_mm3": 11919.7,
+      "passed": true,
+      "id": "10_display_stand",
+      "dimensions_match": true,
+      "bed_min_z_mm": 0.0,
+      "sections": [
+        {
+          "height_mm": 4.812,
+          "segments": 78,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 20.05,
+          "segments": 78,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 35.288,
+          "segments": 78,
+          "open_endpoints": 0
+        }
+      ]
+    },
+    {
+      "triangles": 586,
+      "boundary_or_nonmanifold_edges": 0,
+      "inconsistent_winding_edges": 0,
+      "degenerate_triangles": 0,
+      "volume_mm3": 1679.477,
+      "passed": true,
+      "id": "11_fit_coupon",
+      "dimensions_match": true,
+      "bed_min_z_mm": 0.0,
+      "sections": [
+        {
+          "height_mm": 0.48,
+          "segments": 287,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 2.0,
+          "segments": 287,
+          "open_endpoints": 0
+        },
+        {
+          "height_mm": 3.52,
+          "segments": 287,
+          "open_endpoints": 0
+        }
+      ]
+    }
+  ],
+  "three_mf": [
+    {
+      "file": "assembly-reference.3mf",
+      "objects": 11,
+      "xml_indices_units_and_zip_passed": true
+    },
+    {
+      "file": "layout-01.3mf",
+      "objects": 3,
+      "xml_indices_units_and_zip_passed": true
+    },
+    {
+      "file": "layout-02.3mf",
+      "objects": 9,
+      "xml_indices_units_and_zip_passed": true
+    }
+  ],
+  "layout_no_overlap_and_within_reference_plate": true,
+  "glb": {
+    "bytes": 1147120,
+    "version": 2,
+    "self_contained": true,
+    "propeller_nodes_verified": true
+  },
+  "assembly": {
+    "candidate_pairs_tested": 18,
+    "collision_tolerance_mm3": 0.01,
+    "collisions": [],
+    "passed": true,
+    "method": "Exact boolean intersections of assembled parts, including alignment dowels and stand"
+  },
+  "machine_slicing_performed": false,
+  "physical_print_tested": false,
+  "passed": true
+}

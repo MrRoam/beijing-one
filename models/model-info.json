@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "length_m": 12.4,
+  "wingspan_m": 16.3,
+  "triangles": 42218,
+  "objects": 145,
+  "glb_bytes": 1147120,
+  "fidelity": "reference-based exterior reconstruction; no original engineering drawings",
+  "propeller_nodes": [
+    "Propeller_L",
+    "Propeller_R"
+  ],
+  "gear_prefix": "Gear_"
+}
