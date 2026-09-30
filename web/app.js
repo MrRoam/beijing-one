@@ -1,104 +1,199 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { createWorld, scenePresets } from './scenes.js';
 
-const host=document.querySelector('#canvas-host');
-const loading=document.querySelector('#loading');
-const fallback=document.querySelector('#fallback');
-const buttons=[...document.querySelectorAll('#controls button')];
-const spinButton=document.querySelector('#spin');
-const gearButton=document.querySelector('#gear');
-let renderer,scene,camera,controls,aircraft,box,center,spinning=false,currentView='perspective',lastTime=0;
-let propellers=[],gear=[],fitPoints=[];
+const $=selector=>document.querySelector(selector);
+const host=$('#canvas-host'),loading=$('#loading'),fallback=$('#fallback');
+const readyButtons=[...document.querySelectorAll('#controls button,.scene-buttons button,#play,#open-controls')];
+const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
+let renderer,scene,camera,controls,aircraft,world,center;
+let currentScene='night',currentView='perspective',playing=!motionPreference.matches,spinning=false;
+let lastTime=0,elapsed=0,cameraTransition=null,homeFrame=null,switchTimer=null,switching=false,failed=false;
+const fitPoints=[],propellers=[],gear=[];
 
 function fail(error){
-  console.error('模型载入失败',error);
+  failed=true;console.error('三维展示载入失败',error);
+  if(renderer)renderer.setAnimationLoop(null);
   loading.textContent='三维展示暂不可用，可查看预览图或下载模型。';
-  loading.hidden=false;fallback.classList.remove('loaded');
-  document.querySelector('#retry').hidden=false;
-  buttons.forEach(b=>b.disabled=true);
+  loading.hidden=false;fallback.classList.remove('loaded');$('#retry').hidden=false;
+  readyButtons.forEach(button=>button.disabled=true);
 }
-document.querySelector('#retry').addEventListener('click',()=>location.reload());
+$('#retry').addEventListener('click',()=>location.reload());
 
-function fitView(view=currentView){
-  if(!box)return;
+// 资料与控制面板使用原生 dialog，支持 Escape、焦点约束和关闭后焦点恢复。
+for(const [buttonId,dialogId] of [['#open-info','#info-dialog'],['#open-controls','#controls-dialog']]){
+  const button=$(buttonId),dialog=$(dialogId);
+  button.addEventListener('click',()=>dialog.showModal());
+  dialog.querySelector('[data-close]').addEventListener('click',()=>dialog.close());
+  dialog.addEventListener('click',event=>{
+    if(event.target!==dialog)return;
+    const rect=dialog.getBoundingClientRect();
+    if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)dialog.close();
+  });
+}
+const fullscreenButton=$('#fullscreen');
+if(!document.fullscreenEnabled)fullscreenButton.hidden=true;
+fullscreenButton.addEventListener('click',async()=>{
+  try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}
+  catch(error){console.warn('全屏未开启',error);}
+});
+document.addEventListener('fullscreenchange',()=>fullscreenButton.setAttribute('aria-label',document.fullscreenElement?'退出全屏':'进入全屏'));
+
+function syncPlayback(){
+  $('#play').setAttribute('aria-pressed',String(playing));
+  $('#play').setAttribute('aria-label',playing?'暂停场景动画':'播放场景动画');
+  $('#play-symbol').innerHTML=playing?'<path d="M9 6v12M15 6v12"/>':'<path d="m9 5 10 7-10 7Z"/>';
+  if(controls)controls.autoRotate=playing&&currentView==='perspective'&&currentScene==='night';
+}
+function syncSpin(){
+  $('#spin').setAttribute('aria-pressed',String(spinning));
+  $('#spin').textContent=spinning?'暂停螺旋桨':'播放螺旋桨';
+}
+function setPlaying(value){playing=value;if(!value){spinning=false;syncSpin();}syncPlayback();}
+syncPlayback();
+motionPreference.addEventListener('change',event=>{
+  if(event.matches){setPlaying(false);spinning=false;syncSpin();}
+  if(controls){controls.enableDamping=!event.matches;controls.update();}
+});
+
+function frameFor(view){
+  const directions={perspective:new THREE.Vector3(...scenePresets[currentScene].direction),side:new THREE.Vector3(0,.08,1),top:new THREE.Vector3(0,1,0),front:new THREE.Vector3(-1,.045,0)};
+  const direction=directions[view].normalize();
+  const cameraUp=view==='top'?new THREE.Vector3(0,0,-1):new THREE.Vector3(0,1,0);
+  const right=new THREE.Vector3().crossVectors(cameraUp,direction).normalize();
+  const up=new THREE.Vector3().crossVectors(direction,right).normalize();
+  const aspect=host.clientWidth/Math.max(host.clientHeight,1),mobile=host.clientWidth<700;
+  const tangent=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
+  let distance=12;
+  for(const point of fitPoints){
+    const relative=point.clone().sub(center),depth=relative.dot(direction);
+    distance=Math.max(distance,depth+Math.abs(relative.dot(right))/(tangent*aspect*(mobile?.85:.80)),depth+Math.abs(relative.dot(up))/(tangent*(mobile?.46:.65)));
+  }
+  const target=center.clone().addScaledVector(up,-distance*tangent*(mobile?.12:.035));
+  if(!mobile)target.addScaledVector(right,-distance*tangent*aspect*.025);
+  return {position:target.clone().addScaledVector(direction,distance),target,up:cameraUp};
+}
+
+function fitView(view=currentView,smooth=false){
+  if(!center)return;
   currentView=view;
-  const directions={perspective:new THREE.Vector3(-16,10,21),side:new THREE.Vector3(0,0,1),top:new THREE.Vector3(0,1,0),front:new THREE.Vector3(-1,0,0)};
-  const d=directions[view].normalize();
-  camera.up.set(0,1,0);
-  if(view==='top')camera.up.set(0,0,-1);
-  const right=new THREE.Vector3().crossVectors(camera.up,d).normalize();
-  const up=new THREE.Vector3().crossVectors(d,right).normalize();
-  let xmin=Infinity,xmax=-Infinity,ymin=Infinity,ymax=-Infinity;
-  for(const p of fitPoints){const x=p.dot(right),y=p.dot(up);xmin=Math.min(xmin,x);xmax=Math.max(xmax,x);ymin=Math.min(ymin,y);ymax=Math.max(ymax,y);}
-  const width=xmax-xmin,height=ymax-ymin;
-  const target=center.clone().addScaledVector(right,(xmin+xmax)/2-center.dot(right)).addScaledVector(up,(ymin+ymax)/2-center.dot(up));
-  const aspect=host.clientWidth/Math.max(host.clientHeight,1);
-  const viewHeight=Math.max(height,width/aspect)*1.23;
-  camera.left=-viewHeight*aspect/2;camera.right=viewHeight*aspect/2;
-  camera.top=viewHeight/2;camera.bottom=-viewHeight/2;
-  camera.zoom=1;camera.position.copy(target).addScaledVector(d,40);
-  camera.lookAt(target);camera.updateProjectionMatrix();controls.target.copy(target);controls.update();controls.saveState();
-  document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===view)));
+  const frame=frameFor(view);
+  homeFrame=frame;
+  camera.aspect=host.clientWidth/Math.max(host.clientHeight,1);camera.updateProjectionMatrix();
+  // 正俯视时更换相机 up，避免过渡穿过极点造成翻转。
+  const canAnimate=smooth&&!motionPreference.matches&&view!=='top'&&camera.up.y>.5;
+  camera.up.copy(frame.up);
+  if(canAnimate){
+    cameraTransition={start:performance.now(),from:camera.position.clone(),fromTarget:controls.target.clone(),to:frame.position,target:frame.target};
+  }else{
+    cameraTransition=null;camera.position.copy(frame.position);controls.target.copy(frame.target);camera.lookAt(frame.target);controls.update();
+  }
+  document.querySelectorAll('[data-view]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.view===view)));
+  syncPlayback();
+}
+function resize(){
+  if(!renderer||failed)return;
+  renderer.setPixelRatio(Math.min(devicePixelRatio,host.clientWidth<700?1.5:2));
+  renderer.setSize(host.clientWidth,host.clientHeight,false);world?.resize(host.clientWidth);fitView(currentView);
 }
 
-function resize(){
-  if(!renderer)return;
-  renderer.setSize(host.clientWidth,host.clientHeight,false);
-  fitView(currentView);
+function applyScene(id,initial=false){
+  currentScene=id;elapsed=0;world.setScene(id);aircraft.position.set(0,0,0);aircraft.rotation.set(0,0,0);
+  document.body.dataset.scene=id;$('#scene-name').textContent=scenePresets[id].name;
+  document.querySelectorAll('.scene-buttons button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.scene===id)));
+  spinning=playing&&id==='clouds';syncSpin();controls.autoRotateSpeed=id==='night'?.22:.13;
+  fitView('perspective',!initial);
+  renderer.render(scene,camera);
+}
+function selectScene(id){
+  if(!scenePresets[id]||id===currentScene&&!switching)return;
+  clearTimeout(switchTimer);
+  switching=true;const transition=$('#scene-transition');transition.classList.add('active');
+  switchTimer=setTimeout(()=>{
+    try{applyScene(id);}catch(error){transition.classList.remove('active');switching=false;fail(error);return;}
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{transition.classList.remove('active');switching=false;}));
+  },motionPreference.matches?0:380);
 }
 
 function animate(time){
-  const delta=Math.min((time-lastTime)/1000,.05);lastTime=time;
-  if(spinning)propellers.forEach(p=>p.rotation.x=(p.rotation.x+delta*Math.PI*5)%(Math.PI*2));
-  controls.update();renderer.render(scene,camera);
+  const delta=Math.min(Math.max((time-lastTime)/1000,0),.05);lastTime=time;
+  if(playing){elapsed+=delta;world.update(delta);}
+  if(spinning)for(const propeller of propellers)propeller.rotation.x=(propeller.rotation.x+delta*Math.PI*7)%(Math.PI*2);
+  if(currentScene==='clouds'&&playing){aircraft.position.y=Math.sin(elapsed*.5)*.12;aircraft.rotation.x=Math.sin(elapsed*.28)*.018;}
+  if(cameraTransition){
+    const progress=Math.min((time-cameraTransition.start)/1100,1),ease=1-Math.pow(1-progress,4);
+    camera.position.lerpVectors(cameraTransition.from,cameraTransition.to,ease);
+    controls.target.lerpVectors(cameraTransition.fromTarget,cameraTransition.target,ease);
+    if(progress===1)cameraTransition=null;
+  }
+  // 机库内只作小角度往返运镜，避免自动环绕穿过侧墙。
+  if(currentScene==='hangar'&&playing&&currentView==='perspective'&&!cameraTransition&&homeFrame){
+    const offset=homeFrame.position.clone().sub(homeFrame.target).applyAxisAngle(new THREE.Vector3(0,1,0),Math.sin(elapsed*.1)*.12);
+    camera.position.copy(homeFrame.target).add(offset);
+  }
+  const autoRotate=controls.autoRotate;
+  if(cameraTransition)controls.autoRotate=false;
+  controls.update(delta);controls.autoRotate=autoRotate;renderer.render(scene,camera);
 }
 
 try{
-  renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-  renderer.setSize(host.clientWidth,host.clientHeight,false);
-  renderer.outputColorSpace=THREE.SRGBColorSpace;
-  renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.9;
+  const mobile=host.clientWidth<700;
+  renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.5:2));renderer.setSize(host.clientWidth,host.clientHeight,false);
+  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.AgXToneMapping;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
-  renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label','北京一号三维模型。拖动旋转；也可使用下方视角、缩放与复位按钮。');
-  host.append(renderer.domElement);
-  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();renderer.setAnimationLoop(null);fail(new Error('WebGL context lost'));});
-  scene=new THREE.Scene();camera=new THREE.OrthographicCamera(-12,12,8,-8,.1,180);
-  controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;
-  controls.enablePan=false;controls.minZoom=.55;controls.maxZoom=4;
-  controls.maxPolarAngle=Math.PI*.94;
-  const pmrem=new THREE.PMREMGenerator(renderer);const room=new RoomEnvironment();
-  const environment=pmrem.fromScene(room,.04);scene.environment=environment.texture;room.dispose();pmrem.dispose();
-  scene.add(new THREE.HemisphereLight(0xf1f3ff,0xb7aea0,.7));
-  const key=new THREE.DirectionalLight(0xfff8ed,1.3);key.position.set(-3,18,4);key.castShadow=true;
-  key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-14,right:14,top:14,bottom:-14,near:.5,far:60});
-  key.shadow.bias=-.0002;key.shadow.normalBias=.03;key.shadow.radius=4;scene.add(key);
-  const fill=new THREE.DirectionalLight(0xe7efff,.6);fill.position.set(4,6,-10);scene.add(fill);
-  const ground=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.ShadowMaterial({color:0x6c685f,opacity:.08}));
-  ground.rotation.x=-Math.PI/2;ground.position.y=-.02;ground.receiveShadow=true;scene.add(ground);
-  new ResizeObserver(resize).observe(host);
+  renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label','北京一号三维模型，拖动旋转，滚轮或双指缩放。');host.append(renderer.domElement);
+  renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();fail(new Error('WebGL context lost'));});
+  scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(34,host.clientWidth/host.clientHeight,.2,500);
+  camera.position.set(-24,12,30);
+  controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=!motionPreference.matches;controls.dampingFactor=.08;
+  controls.enablePan=false;controls.minDistance=7;controls.maxDistance=125;controls.maxPolarAngle=Math.PI*.72;
+  controls.addEventListener('start',()=>{cameraTransition=null;setPlaying(false);});
+  world=createWorld(renderer,scene,mobile);
   const gltf=await new GLTFLoader().loadAsync('../models/beijing-one.glb',progress=>{
-    if(progress.total)loading.textContent=`正在载入三维模型… ${Math.round(progress.loaded/progress.total*100)}%`;
+    if(progress.total)loading.textContent=`正在载入模型… ${Math.round(progress.loaded/progress.total*100)}%`;
   });
+  if(failed)throw new Error('WebGL unavailable during model loading');
   aircraft=gltf.scene;scene.add(aircraft);aircraft.updateMatrixWorld(true);
-  aircraft.traverse(o=>{
-    if(o.isMesh){o.castShadow=true;o.receiveShadow=true;const positions=o.geometry.attributes.position;for(let i=0;i<positions.count;i++)fitPoints.push(new THREE.Vector3().fromBufferAttribute(positions,i).applyMatrix4(o.matrixWorld));}
-    if(o.name==='Propeller_L'||o.name==='Propeller_R')propellers.push(o);
-    if(o.name.startsWith('Gear_'))gear.push(o);
+  aircraft.traverse(object=>{
+    if(object.isMesh){
+      object.castShadow=true;object.receiveShadow=true;
+      for(const material of Array.isArray(object.material)?object.material:[object.material])material.fog=false;
+      const positions=object.geometry.attributes.position;
+      for(let i=0;i<positions.count;i++)fitPoints.push(new THREE.Vector3().fromBufferAttribute(positions,i).applyMatrix4(object.matrixWorld));
+    }
+    if(object.name==='Propeller_L'||object.name==='Propeller_R')propellers.push(object);
+    if(object.name.startsWith('Gear_'))gear.push(object);
   });
   if(propellers.length!==2)throw new Error('Missing propeller nodes');
-  box=new THREE.Box3().setFromObject(aircraft);center=box.getCenter(new THREE.Vector3());
-  fitView();renderer.render(scene,camera);
-  fallback.classList.add('loaded');loading.hidden=true;buttons.forEach(b=>b.disabled=false);
-  document.querySelector('#viewer').setAttribute('aria-label','北京一号三维模型已载入');
+  center=new THREE.Box3().setFromObject(aircraft).getCenter(new THREE.Vector3());
+  applyScene('night',true);fallback.classList.add('loaded');loading.hidden=true;
+  readyButtons.forEach(button=>button.disabled=false);$('#viewer').setAttribute('aria-label','北京一号三维模型已载入');
+  new ResizeObserver(resize).observe(host);
   renderer.setAnimationLoop(animate);
-  document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>fitView(b.dataset.view)));
-  spinButton.addEventListener('click',()=>{spinning=!spinning;spinButton.setAttribute('aria-pressed',String(spinning));document.querySelector('#spin-label').textContent=spinning?'暂停螺旋桨':'播放螺旋桨';spinButton.querySelector('.play-icon').textContent=spinning?'Ⅱ':'▷';});
-  gearButton.addEventListener('click',()=>{const visible=gearButton.getAttribute('aria-pressed')!=='true';gear.forEach(o=>o.visible=visible);gearButton.setAttribute('aria-pressed',String(visible));});
-  document.querySelector('#zoom-in').addEventListener('click',()=>{camera.zoom=Math.min(controls.maxZoom,camera.zoom*1.2);camera.updateProjectionMatrix();});
-  document.querySelector('#zoom-out').addEventListener('click',()=>{camera.zoom=Math.max(controls.minZoom,camera.zoom/1.2);camera.updateProjectionMatrix();});
-  document.querySelector('#reset').addEventListener('click',()=>fitView('perspective'));
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){renderer.setAnimationLoop(null);}else{lastTime=performance.now();renderer.setAnimationLoop(animate);}});
+  document.querySelectorAll('.scene-buttons button').forEach(button=>button.addEventListener('click',()=>selectScene(button.dataset.scene)));
+  document.querySelectorAll('[data-view]').forEach(button=>button.addEventListener('click',()=>{setPlaying(false);fitView(button.dataset.view,true);}));
+  $('#play').addEventListener('click',()=>{
+    if(!playing&&currentView!=='perspective')fitView('perspective',true);
+    setPlaying(!playing);
+    if(currentScene==='clouds'){spinning=playing;syncSpin();}
+  });
+  $('#spin').addEventListener('click',()=>{spinning=!spinning;syncSpin();});
+  $('#gear').addEventListener('click',()=>{
+    const visible=$('#gear').getAttribute('aria-pressed')!=='true';
+    gear.forEach(object=>object.visible=visible);$('#gear').setAttribute('aria-pressed',String(visible));
+  });
+  function zoom(factor){
+    setPlaying(false);cameraTransition=null;
+    const direction=camera.position.clone().sub(controls.target),distance=THREE.MathUtils.clamp(direction.length()*factor,controls.minDistance,controls.maxDistance);
+    camera.position.copy(controls.target).add(direction.setLength(distance));controls.update();
+  }
+  $('#zoom-in').addEventListener('click',()=>zoom(1/1.2));$('#zoom-out').addEventListener('click',()=>zoom(1.2));
+  $('#reset').addEventListener('click',()=>{setPlaying(false);fitView('perspective',true);});
+  document.addEventListener('visibilitychange',()=>{
+    if(failed)return;
+    if(document.hidden)renderer.setAnimationLoop(null);
+    else{lastTime=performance.now();renderer.setAnimationLoop(animate);}
+  });
 }catch(error){fail(error);}
