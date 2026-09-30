@@ -10,7 +10,9 @@ const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
 let renderer,scene,camera,controls,aircraft,world,center;
 let currentScene='night',currentView='perspective',playing=!motionPreference.matches,spinning=false;
 let lastTime=0,elapsed=0,cameraTransition=null,homeFrame=null,switchTimer=null,switching=false,failed=false;
+let needsRender=true;
 const fitPoints=[],propellers=[],gear=[];
+const orbitOffset=new THREE.Vector3(),verticalAxis=new THREE.Vector3(0,1,0);
 
 function fail(error){
   failed=true;console.error('三维展示载入失败',error);
@@ -41,12 +43,14 @@ fullscreenButton.addEventListener('click',async()=>{
 document.addEventListener('fullscreenchange',()=>fullscreenButton.setAttribute('aria-label',document.fullscreenElement?'退出全屏':'进入全屏'));
 
 function syncPlayback(){
+  needsRender=true;
   $('#play').setAttribute('aria-pressed',String(playing));
   $('#play').setAttribute('aria-label',playing?'暂停场景动画':'播放场景动画');
   $('#play-symbol').innerHTML=playing?'<path d="M9 6v12M15 6v12"/>':'<path d="m9 5 10 7-10 7Z"/>';
-  if(controls)controls.autoRotate=playing&&currentView==='perspective'&&currentScene==='night';
+  if(controls)controls.autoRotate=playing&&currentView==='perspective'&&currentScene==='night'&&host.clientWidth>=700;
 }
 function syncSpin(){
+  needsRender=true;
   $('#spin').setAttribute('aria-pressed',String(spinning));
   $('#spin').textContent=spinning?'暂停螺旋桨':'播放螺旋桨';
 }
@@ -58,19 +62,24 @@ motionPreference.addEventListener('change',event=>{
 });
 
 function frameFor(view){
-  const directions={perspective:new THREE.Vector3(...scenePresets[currentScene].direction),side:new THREE.Vector3(0,.08,1),top:new THREE.Vector3(0,1,0),front:new THREE.Vector3(-1,.045,0)};
+  const mobile=host.clientWidth<700;
+  const preset=scenePresets[currentScene];
+  const directions={perspective:new THREE.Vector3(...(mobile?preset.portrait:preset.direction)),side:new THREE.Vector3(0,.08,1),top:new THREE.Vector3(0,1,0),front:new THREE.Vector3(-1,.045,0)};
   const direction=directions[view].normalize();
   const cameraUp=view==='top'?new THREE.Vector3(0,0,-1):new THREE.Vector3(0,1,0);
+  if(mobile&&view==='perspective')cameraUp.applyAxisAngle(direction,-.12);
   const right=new THREE.Vector3().crossVectors(cameraUp,direction).normalize();
   const up=new THREE.Vector3().crossVectors(direction,right).normalize();
-  const aspect=host.clientWidth/Math.max(host.clientHeight,1),mobile=host.clientWidth<700;
+  const aspect=host.clientWidth/Math.max(host.clientHeight,1);
   const tangent=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
   let distance=12;
   for(const point of fitPoints){
-    const relative=point.clone().sub(center),depth=relative.dot(direction);
-    distance=Math.max(distance,depth+Math.abs(relative.dot(right))/(tangent*aspect*(mobile?.85:.80)),depth+Math.abs(relative.dot(up))/(tangent*(mobile?.46:.65)));
+    const x=point.x-center.x,y=point.y-center.y,z=point.z-center.z;
+    const depth=x*direction.x+y*direction.y+z*direction.z;
+    const horizontal=x*right.x+y*right.y+z*right.z,vertical=x*up.x+y*up.y+z*up.z;
+    distance=Math.max(distance,depth+Math.abs(horizontal)/(tangent*aspect*(mobile?.9:.84)),depth+Math.abs(vertical)/(tangent*(mobile?.65:.69)));
   }
-  const target=center.clone().addScaledVector(up,-distance*tangent*(mobile?.12:.035));
+  const target=center.clone().addScaledVector(up,-distance*tangent*(mobile?.08:.025));
   if(!mobile)target.addScaledVector(right,-distance*tangent*aspect*.025);
   return {position:target.clone().addScaledVector(direction,distance),target,up:cameraUp};
 }
@@ -118,6 +127,7 @@ function selectScene(id){
 
 function animate(time){
   const delta=Math.min(Math.max((time-lastTime)/1000,0),.05);lastTime=time;
+  const transitioning=!!cameraTransition;
   if(playing){elapsed+=delta;world.update(delta);}
   if(spinning)for(const propeller of propellers)propeller.rotation.x=(propeller.rotation.x+delta*Math.PI*7)%(Math.PI*2);
   if(currentScene==='clouds'&&playing){aircraft.position.y=Math.sin(elapsed*.5)*.12;aircraft.rotation.x=Math.sin(elapsed*.28)*.018;}
@@ -127,14 +137,16 @@ function animate(time){
     controls.target.lerpVectors(cameraTransition.fromTarget,cameraTransition.target,ease);
     if(progress===1)cameraTransition=null;
   }
-  // 机库内只作小角度往返运镜，避免自动环绕穿过侧墙。
-  if(currentScene==='hangar'&&playing&&currentView==='perspective'&&!cameraTransition&&homeFrame){
-    const offset=homeFrame.position.clone().sub(homeFrame.target).applyAxisAngle(new THREE.Vector3(0,1,0),Math.sin(elapsed*.1)*.12);
-    camera.position.copy(homeFrame.target).add(offset);
+  // 竖屏以小角度运镜保持构图，完整环绕会让较近的机翼越出窄屏。
+  if((currentScene==='hangar'||currentScene==='night'&&host.clientWidth<700)&&playing&&currentView==='perspective'&&!cameraTransition&&homeFrame){
+    orbitOffset.copy(homeFrame.position).sub(homeFrame.target).applyAxisAngle(verticalAxis,Math.sin(elapsed*.1)*(host.clientWidth<700?.055:.1));
+    camera.position.copy(homeFrame.target).add(orbitOffset);
   }
   const autoRotate=controls.autoRotate;
   if(cameraTransition)controls.autoRotate=false;
-  controls.update(delta);controls.autoRotate=autoRotate;renderer.render(scene,camera);
+  const changed=controls.update(delta);controls.autoRotate=autoRotate;
+  // 暂停后保留最后一帧；拖动、缩放、控件和窗口变化会重新触发绘制。
+  if(playing||spinning||transitioning||changed||needsRender){renderer.render(scene,camera);needsRender=false;}
 }
 
 try{
@@ -149,6 +161,7 @@ try{
   camera.position.set(-24,12,30);
   controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=!motionPreference.matches;controls.dampingFactor=.08;
   controls.enablePan=false;controls.minDistance=7;controls.maxDistance=125;controls.maxPolarAngle=Math.PI*.72;
+  controls.addEventListener('change',()=>{needsRender=true;});
   controls.addEventListener('start',()=>{cameraTransition=null;setPlaying(false);});
   world=createWorld(renderer,scene,mobile);
   const gltf=await new GLTFLoader().loadAsync('../models/beijing-one.glb',progress=>{
@@ -183,6 +196,7 @@ try{
   $('#gear').addEventListener('click',()=>{
     const visible=$('#gear').getAttribute('aria-pressed')!=='true';
     gear.forEach(object=>object.visible=visible);$('#gear').setAttribute('aria-pressed',String(visible));
+    needsRender=true;
   });
   function zoom(factor){
     setPlaying(false);cameraTransition=null;

@@ -16,6 +16,7 @@ button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5
 .fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:1;transition:opacity .4s;background:#0d121a}
 .fallback.loaded{opacity:0;pointer-events:none}
 .scene-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#080c124f,transparent 25%,transparent 68%,#080c12b3);transition:opacity .7s}
+body[data-scene="hangar"] .scene-shade{background:linear-gradient(180deg,#060d14c2,transparent 28%,transparent 68%,#080c12b3)}
 body[data-scene="clouds"] .scene-shade{background:linear-gradient(180deg,#e0edf878,transparent 25%,transparent 65%,#d9e8f5cf)}
 .scene-transition{position:absolute;inset:0;z-index:4;background:#11151a;opacity:0;pointer-events:none;transition:opacity .38s ease}
 .scene-transition.active{opacity:1}
@@ -25,15 +26,13 @@ body[data-scene="clouds"] .scene-shade{background:linear-gradient(180deg,#e0edf8
 .identity p{font-size:10px;letter-spacing:2px;margin:8px 0 0;color:var(--muted)}
 .menu-button{pointer-events:auto;display:flex;align-items:center;gap:14px;border:0;background:transparent;padding:8px 0 8px 12px;min-height:44px;font-size:12px}
 .menu-button:hover{color:var(--accent)}
-.scene-caption{position:absolute;left:4.5%;bottom:136px;display:flex;align-items:center;gap:16px;pointer-events:none}
-.scene-caption p{font-family:"Songti SC","SimSun",serif;font-size:22px;letter-spacing:4px;margin:0;font-weight:400}
-.caption-line{width:32px;height:1px;background:var(--ink);opacity:.65}
+.scene-caption{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .stage-footer{position:absolute;bottom:max(28px,env(safe-area-inset-bottom));left:4.5%;right:4.5%;display:flex;justify-content:space-between;align-items:center;gap:24px;z-index:5;border-top:1px solid var(--line);padding-top:18px}
 .scene-buttons{display:flex;gap:32px}
 .scene-buttons button{position:relative;display:flex;align-items:center;gap:10px;min-height:44px;padding:0;background:transparent;border:0;font-size:13px;letter-spacing:1px;color:var(--muted)}
+.scene-buttons button::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+.scene-buttons button[aria-pressed="true"]::after{transform:scaleX(1)}
 .scene-buttons button:hover,.scene-buttons button[aria-pressed="true"]{color:var(--ink)}
-.scene-dot{width:5px;height:5px;border:1px solid currentColor;border-radius:50%;opacity:.6}
-.scene-buttons button[aria-pressed="true"] .scene-dot{border-color:var(--accent);background:var(--accent);opacity:1}
 .stage-actions{display:flex;gap:12px}
 .stage-actions button{border:0;background:transparent;min-width:44px;min-height:44px;display:grid;place-items:center;border-radius:6px}
 .stage-actions button:hover{background:#80808026}
@@ -93,9 +92,6 @@ body[data-scene="clouds"] .scene-shade{background:linear-gradient(180deg,#e0edf8
  .identity p{font-size:9px;letter-spacing:1px}
  .menu-button{padding-top:0}
  .menu-button span{display:none}
- .scene-caption{left:6%;bottom:178px;gap:12px}
- .scene-caption p{font-size:18px;letter-spacing:3px}
- .caption-line{width:22px}
  .stage-footer{left:6%;right:6%;bottom:max(18px,env(safe-area-inset-bottom));flex-direction:column;align-items:stretch;gap:10px;padding-top:12px}
  .scene-buttons{gap:0;justify-content:space-between}
  .scene-buttons button{font-size:12px;letter-spacing:.5px;gap:8px}
@@ -113,5 +109,5 @@ body[data-scene="clouds"] .scene-shade{background:linear-gradient(180deg,#e0edf8
  .file-label small{font-size:9px}
  .file-action{font-size:10px}
 }
-@media(max-height:500px) and (min-width:701px){.header{top:18px}.scene-caption{bottom:95px}.stage-footer{bottom:12px;padding-top:8px}}
+@media(max-height:500px) and (min-width:701px){.header{top:18px}.stage-footer{bottom:12px;padding-top:8px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
