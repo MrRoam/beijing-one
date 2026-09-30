@@ -116,8 +116,9 @@ function createClouds(group,mobile){
       float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*noise(p);p=p*2.02+vec2(7.3,13.9);a*=.5;}return v;}
       float density(vec3 p){
         float altitude=(p.y+18.)/12.;
-        vec2 drift=vec2(time*.015,0.);
-        float n=fbm(p.xz*.065+vec2(p.y*.085,0.)+drift)+noise(p.xy*.13+drift)*.22;
+        // 机头朝 -X：云层沿 +X 掠过；统一移动采样坐标，保持云团形状。
+        p.x-=time*3.8;
+        float n=fbm(p.xz*.065+vec2(p.y*.085,0.))+noise(p.xy*.13)*.22;
         return smoothstep(.56,.83,n)*1.5*smoothstep(0.,.14,altitude)*(1.-smoothstep(.78,1.,altitude));
       }
       void main(){

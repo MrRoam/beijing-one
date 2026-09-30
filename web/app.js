@@ -109,6 +109,8 @@ function resize(){
 
 function applyScene(id,initial=false){
   currentScene=id;elapsed=0;world.setScene(id);aircraft.position.set(0,0,0);aircraft.rotation.set(0,0,0);
+  // 主动进入巡航即开始飞行，不继承查看其他场景时的暂停状态。
+  if(id==='clouds'&&!motionPreference.matches)setPlaying(true);
   document.body.dataset.scene=id;$('#scene-name').textContent=scenePresets[id].name;
   document.querySelectorAll('.scene-buttons button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.scene===id)));
   spinning=playing&&id==='clouds';syncSpin();controls.autoRotateSpeed=id==='night'?.22:.13;
@@ -130,7 +132,11 @@ function animate(time){
   const transitioning=!!cameraTransition;
   if(playing){elapsed+=delta;world.update(delta);}
   if(spinning)for(const propeller of propellers)propeller.rotation.x=(propeller.rotation.x+delta*Math.PI*7)%(Math.PI*2);
-  if(currentScene==='clouds'&&playing){aircraft.position.y=Math.sin(elapsed*.5)*.12;aircraft.rotation.x=Math.sin(elapsed*.28)*.018;}
+  if(currentScene==='clouds'&&playing){
+    aircraft.position.y=Math.sin(elapsed*.85)*.32;
+    aircraft.rotation.x=Math.sin(elapsed*.55)*.035;
+    aircraft.rotation.z=Math.sin(elapsed*.7)*.012;
+  }
   if(cameraTransition){
     const progress=Math.min((time-cameraTransition.start)/1100,1),ease=1-Math.pow(1-progress,4);
     camera.position.lerpVectors(cameraTransition.from,cameraTransition.to,ease);
